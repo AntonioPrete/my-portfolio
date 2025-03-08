@@ -1,13 +1,15 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
 pool:
   vmImage: 'ubuntu-latest'
+
+variables:
+  dockerRegistryServiceConnection: 'dockerRegistryServiceConnection'
+  imageRepository: 'my-portfolio'
+  containerRegistry: 'prete88'
+  dockerfilePath: '**/Dockerfile'
+  tag: '$(Build.BuildId)'
 
 steps:
 - task: NodeTool@0
@@ -23,8 +25,8 @@ steps:
 - task: Docker@2
   inputs:
     containerRegistry: '$(dockerRegistryServiceConnection)'
-    repository: 'my-portfolio'
+    repository: '$(containerRegistry)/$(imageRepository)'
     command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
+    Dockerfile: '$(dockerfilePath)'
     tags: |
-      $(Build.BuildId)
+      $(tag)
