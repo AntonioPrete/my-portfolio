@@ -11,11 +11,11 @@ pool:
 
 variables:
   dockerRegistryServiceConnection: 'dockerRegistryServiceConnection'
+  kubernetesServiceConnection: 'kubeserviceconnection'
   imageRepository: 'my-portfolio'
   containerRegistry: 'prete88'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
-  KUBECONFIG: '$(Build.SourcesDirectory)/.kube/config'
 
 steps:
 - task: NodeTool@0
@@ -37,14 +37,10 @@ steps:
     tags: |
       $(tag)
 
-- task: CopyFiles@2
+- task: Kubernetes@1
   inputs:
-    SourceFolder: '$(System.DefaultWorkingDirectory)'
-    Contents: '**/.kube/config'
-    TargetFolder: '$(Build.SourcesDirectory)/.kube'
-
-- script: |
-    kubectl set image deployment/my-portfolio my-portfolio=$(containerRegistry)/$(imageRepository):$(tag)
+    connectionType: 'Kubernetes Service Connection'
+    kubernetesServiceEndpoint: '$(kubernetesServiceConnection)'
+    command: 'set'
+    arguments: 'image deployment/my-portfolio my-portfolio=$(containerRegistry)/$(imageRepository):$(tag)'
   displayName: 'Update Kubernetes deployment'
-  env:
-    KUBECONFIG: $(KUBECONFIG)
