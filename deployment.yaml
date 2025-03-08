@@ -11,9 +11,9 @@ spec:
     metadata:
       labels:
         app: my-portfolio
-    spec:
-      containers:
-      - name: my-portfolio
-        image: my-portfolio
-        ports:
-        - containerPort: 3000
+  spec:
+containers:
+- name: my-portfolio
+  image: prete88/my-portfolio:latest
+  ports:
+  - containerPort: 3000
