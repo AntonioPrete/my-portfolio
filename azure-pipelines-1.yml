@@ -15,6 +15,7 @@ variables:
   containerRegistry: 'prete88'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
+  KUBECONFIG: '$(Build.SourcesDirectory)/.kube/config'
 
 steps:
 - task: NodeTool@0
@@ -36,6 +37,14 @@ steps:
     tags: |
       $(tag)
 
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    Contents: '**/.kube/config'
+    TargetFolder: '$(Build.SourcesDirectory)/.kube'
+
 - script: |
     kubectl set image deployment/my-portfolio my-portfolio=$(containerRegistry)/$(imageRepository):$(tag)
   displayName: 'Update Kubernetes deployment'
+  env:
+    KUBECONFIG: $(KUBECONFIG)
